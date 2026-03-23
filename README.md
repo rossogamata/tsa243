@@ -12,10 +12,12 @@
 | Заняття | Тема | Тип |
 |---------|------|-----|
 | [lesson2\_2](lesson2_2/) | Управління процесами, архівування та файлові права | Практика |
-| [lesson5\_3](lesson5_3/) | Автоматизація системних процесів та системи логування | Групове |
 | [lesson3\_3](lesson3_3/) | Робота з файловою системою Linux | Практика |
 | [lesson4\_1](lesson4_1/) | Системне ПЗ: керування пакетами та текстові редактори | Лекція |
 | [lesson4\_2](lesson4_2/) | Системне ПЗ: дії з програмним забезпеченням | Практика |
+| [lesson5\_1](lesson5_1/) | Користувачі, групи, планування завдань, локалізація, час | Лекція |
+| [lesson5\_3](lesson5_3/) | Автоматизація системних процесів та системи логування | Групове |
+| [lesson5\_4](lesson5_4/) | Написання базових скриптів та налаштування систем логування | Практика |
 
 ---
 
@@ -33,18 +35,6 @@
 
 ---
 
-### [Заняття 5.3 — Автоматизація системних процесів та системи логування](lesson5_3/)
-
-- BASH-скрипти: shebang, змінні, умови, цикли, функції, аргументи
-- Перенаправлення введення/виведення, рядкові операції
-- Архітектура логування: rsyslog, systemd-journald
-- `journalctl`: фільтрація за сервісом, пріоритетом, часом, форматом
-- `logger`: запис у syslog зі скриптів
-- `logrotate`: ротація та стиснення лог-файлів
-
-Включає інтерактивний скрипт [самоперевірки](lesson5_3/self_check/check.sh) (7 розділів, 25+ питань).
-
----
 
 ### [Заняття 3.3 — Робота з файловою системою Linux](lesson3_3/)
 
@@ -86,70 +76,203 @@
 
 ---
 
+### [Заняття 5.1 — Користувачі, групи, планування завдань, локалізація, час](lesson5_1/)
+
+- `useradd`, `usermod`, `userdel`, `passwd` — керування користувачами
+- `groupadd`, `groupmod`, `gpasswd` — керування групами
+- `chmod`, `chown`, `chgrp`, SUID/SGID/Sticky — права доступу
+- `sudo`, `visudo`, `/etc/sudoers` — привілейований доступ
+- `crontab`, `/etc/cron.d/`, `systemd timers`, `at` — планування завдань
+- `localectl`, `locale-gen`, `iconv` — локалізація та кодування
+- `timedatectl`, `hwclock`, NTP (`systemd-timesyncd`, `chrony`) — системний час
+
+---
+
+### [Заняття 5.3 — Автоматизація системних процесів та системи логування](lesson5_3/)
+
+- BASH-скрипти: shebang, змінні, умови, цикли, функції, аргументи
+- Перенаправлення введення/виведення, рядкові операції
+- Архітектура логування: rsyslog, systemd-journald
+- `journalctl`: фільтрація за сервісом, пріоритетом, часом, форматом
+- `logger`: запис у syslog зі скриптів
+- `logrotate`: ротація та стиснення лог-файлів
+
+Включає інтерактивний скрипт [самоперевірки](lesson5_3/self_check/check.sh) (7 розділів, 25+ питань).
+
+---
+
+### [Заняття 5.4 — Написання базових скриптів та налаштування систем логування](lesson5_4/)
+
+- 29 індивідуальних варіантів практичних завдань для написання BASH-скриптів
+- Завдання охоплюють: моніторинг, резервне копіювання, аналіз логів, мережу, систему
+- Налаштування централізованого rsyslog-сервера (прийом по UDP/TCP)
+- Конфігурація клієнта для пересилання логів, тестування та перевірка
+
+---
+
 ## Швидка шпаргалка
 
 ```bash
-# Процеси
-ps aux                        # список процесів
-kill -9 <PID>                 # примусове завершення
-top / htop                    # моніторинг у реальному часі
+# ═══════════════════════════════════════════════════════════
+# ПРОЦЕСИ (lesson2_2)
+# ═══════════════════════════════════════════════════════════
+ps aux                              # список всіх процесів
+ps aux --sort=-%cpu | head -6       # топ-5 за CPU
+ps aux --sort=-%mem | head -6       # топ-5 за RAM
+ps -ejH                             # дерево процесів
+top / htop                          # інтерактивний моніторинг
+sleep 300 &                         # запустити у фоні
+kill PID                            # завершити процес (SIGTERM)
+kill -9 PID                         # примусово (SIGKILL)
+pgrep nginx                         # знайти PID за ім'ям
 
-# Архіви
-tar -czvf archive.tar.gz dir/ # створити .tar.gz
-tar -xzvf archive.tar.gz      # розпакувати
+# ═══════════════════════════════════════════════════════════
+# АРХІВИ ТА ПРАВА (lesson2_2)
+# ═══════════════════════════════════════════════════════════
+tar -czvf archive.tar.gz dir/       # створити .tar.gz
+tar -xzvf archive.tar.gz            # розпакувати .tar.gz
+tar -tzf archive.tar.gz             # переглянути вміст
+chmod 740 file                      # rwxr----- (числовий)
+chmod u+x,g-w file                  # символьний запис
+chmod -R 755 dir/                   # рекурсивно
+ln -s target linkname               # символічне посилання
+ln target hardlink                  # жорстке посилання
 
-# Права доступу
-chmod 740 file                # власник: rwx, група: r, інші: ---
-ln -s target linkname         # символічне посилання
+# ═══════════════════════════════════════════════════════════
+# ДИСКИ ТА ФАЙЛОВА СИСТЕМА (lesson3_3)
+# ═══════════════════════════════════════════════════════════
+lsblk -f                            # структура дисків + ФС
+df -hT                              # вільний простір + тип ФС
+du -sh /var/log                     # розмір директорії
+sudo fdisk /dev/sdb                 # розмітка MBR
+sudo gdisk /dev/sdb                 # розмітка GPT
+sudo mkfs.ext4 /dev/sdb1            # форматувати ext4
+sudo mount /dev/sdb1 /mnt/data      # монтування
+sudo umount /mnt/data               # розмонтування
+sudo blkid                          # UUID та типи розділів
+sudo fsck /dev/sdb1                 # перевірка ФС
+cat /etc/fstab                      # автомонтування при завантаженні
 
-# BASH-скрипти
-chmod +x script.sh && ./script.sh     # запустити скрипт
-bash -x script.sh                     # режим трасування (debug)
-bash -n script.sh                     # перевірка синтаксису
-VAR="value"; echo "${VAR}"            # змінна та використання
-CMD=$(command)                        # результат команди у змінну
-[ -f file ] / [ -d dir ] / [ -e path] # умови: файл / директорія / існує
-[ -z "$V" ] / [ -n "$V" ]             # порожній / непорожній рядок
-for i in {1..5}; do ...; done         # цикл
-while [ cond ]; do ...; done          # цикл while
-logger -t TAG -p local0.info "MSG"    # запис у syslog
+# ═══════════════════════════════════════════════════════════
+# ПАКЕТИ APT (lesson4_1 / lesson4_2)
+# ═══════════════════════════════════════════════════════════
+sudo apt update && sudo apt upgrade # оновити список і пакети
+sudo apt install <pkg>              # встановити пакет
+sudo apt remove <pkg>               # видалити (конфіги зберігаються)
+sudo apt purge <pkg> && sudo apt autoremove  # повне видалення
+apt show <pkg>                      # інформація про пакет
+apt list --upgradable               # пакети, що потребують оновлення
+apt-cache depends <pkg>             # залежності пакету
+dpkg -l | grep <pkg>                # чи встановлено пакет
+dpkg -L <pkg>                       # файли встановленого пакету
+dpkg -S /usr/bin/file               # якому пакету належить файл
+ldd $(which nginx)                  # динамічні бібліотеки бінарника
+ldconfig -p | grep libssl           # пошук у кеші бібліотек
 
-# Логування
-tail -f /var/log/syslog               # стежити за syslog
-journalctl -f                         # стежити за journald
-journalctl -u SERVICE                 # логи сервісу
-journalctl -p err                     # тільки помилки
-journalctl --since "1 hour ago"       # за останню годину
-journalctl --disk-usage               # розмір журналу
-grep -i "error" /var/log/syslog       # пошук помилок
-sudo logrotate --force /etc/logrotate.d/APP  # ротація вручну
-
-# Диски та файлова система
-lsblk -f                      # структура дисків
-df -hT                        # вільний простір + тип ФС
-sudo fdisk /dev/sdb           # розмітка диска
-sudo mount /dev/sdb1 /mnt/x   # монтування
-sudo blkid                    # UUID розділів
-
-# Пакети (APT)
-sudo apt update && sudo apt upgrade
-sudo apt install <pkg>
-sudo apt purge <pkg> && sudo apt autoremove
-apt show <pkg>
-dpkg -L <pkg>                 # файли пакету
-dpkg -S <file>                # якому пакету належить файл
-ldd $(which <binary>)         # залежності бінарника
-
-# Збірка з коду
+# Збірка з вихідного коду
 ./configure --prefix=/usr/local
 make -j$(nproc)
 sudo make install
 
-# Текстові редактори
-nano file.txt                 # Ctrl+O зберегти, Ctrl+X вийти
-vim file.txt                  # i — INSERT, Esc — Normal, :wq — вийти
-sed -i 's/old/new/g' file     # заміна у файлі
-awk -F',' '{print $1}' file   # перший стовпець CSV
+# ═══════════════════════════════════════════════════════════
+# ТЕКСТОВІ РЕДАКТОРИ ТА ПОТОКОВА ОБРОБКА (lesson4_2)
+# ═══════════════════════════════════════════════════════════
+nano file.txt                       # Ctrl+O зберегти, Ctrl+X вийти
+vim file.txt                        # i=INSERT, Esc=Normal, :wq=вийти
+sed -i 's/old/new/g' file           # заміна всіх входжень у файлі
+sed -n '5,10p' file                 # вивести рядки 5-10
+awk '{print $1, $3}' file           # вивести 1-й та 3-й стовпці
+awk -F',' '{print $2}' file.csv     # стовпець CSV
+awk '/pattern/ {print}' file        # фільтр за шаблоном
+awk '{sum+=$1} END{print sum}' file # сума першого стовпця
+
+# ═══════════════════════════════════════════════════════════
+# КОРИСТУВАЧІ ТА ГРУПИ (lesson5_1)
+# ═══════════════════════════════════════════════════════════
+sudo useradd -m -s /bin/bash -c "Ім'я" username  # створити користувача
+sudo passwd username                # встановити пароль
+sudo usermod -aG docker username    # додати до групи (-a = append!)
+sudo usermod -L username            # заблокувати обліковий запис
+sudo userdel -r username            # видалити з домашньою директорією
+id username                         # UID, GID, групи
+who / w                             # хто зараз у системі
+last / lastb                        # журнал входів / невдалих входів
+sudo groupadd groupname             # створити групу
+sudo gpasswd -d username groupname  # видалити з групи
+sudo chown user:group file          # змінити власника та групу
+sudo visudo                         # безпечне редагування sudoers
+sudo -l                             # переглянути свої sudo-права
+chage -l username                   # термін дії паролю
+
+# ═══════════════════════════════════════════════════════════
+# ПЛАНУВАННЯ ЗАВДАНЬ (lesson5_1)
+# ═══════════════════════════════════════════════════════════
+crontab -e                          # редагувати cron поточного користувача
+crontab -l                          # переглянути cron
+sudo crontab -u user -e             # cron іншого користувача
+# хв год день міс дт_тижня команда
+# */15 * * * *  /opt/check.sh       — кожні 15 хвилин
+# 30 2 * * *    /opt/backup.sh      — щодня о 02:30
+# @reboot       /opt/startup.sh     — при завантаженні
+systemctl list-timers --all         # systemd таймери
+at now + 1 hour                     # одноразово через 1 год
+atq / atrm N                        # черга at / видалити завдання N
+
+# ═══════════════════════════════════════════════════════════
+# ЛОКАЛІЗАЦІЯ ТА ЧАС (lesson5_1)
+# ═══════════════════════════════════════════════════════════
+locale                              # поточні налаштування
+locale -a | grep uk                 # встановлені локалі
+sudo localectl set-locale LANG=uk_UA.UTF-8   # встановити локаль
+sudo localectl set-keymap ua        # розкладка клавіатури
+iconv -f cp1251 -t utf-8 in.txt -o out.txt   # конвертація кодування
+timedatectl                         # час, зона, NTP-статус
+timedatectl list-timezones | grep Kyiv  # пошук часового поясу
+sudo timedatectl set-timezone Europe/Kyiv    # встановити зону
+sudo timedatectl set-ntp true       # увімкнути NTP
+date "+%Y-%m-%d %H:%M:%S"          # форматований вивід дати
+sudo hwclock --systohc              # синхронізувати апаратний годинник
+chronyc tracking                    # статус NTP (chrony)
+
+# ═══════════════════════════════════════════════════════════
+# BASH-СКРИПТИ (lesson5_3)
+# ═══════════════════════════════════════════════════════════
+chmod +x script.sh && ./script.sh   # запустити скрипт
+bash -n script.sh                   # перевірка синтаксису
+bash -x script.sh                   # трасування (debug)
+VAR="value"; echo "${VAR}"          # змінна та використання
+CMD=$(command)                      # результат команди у змінну
+readonly CONST="незмінна"           # константа
+export VAR                          # змінна середовища
+[ -f file ] / [ -d dir ]            # перевірка файл/директорія
+[ -z "$V" ] / [ -n "$V" ]           # порожній / непорожній рядок
+[ "$A" -eq "$B" ]                   # числове рівняння (-eq -ne -lt -gt)
+[[ "$S" =~ ^[0-9]+$ ]]              # regex перевірка
+for i in {1..5}; do ...; done       # числовий цикл
+for f in /etc/*.conf; do ...; done  # цикл по файлах
+while IFS= read -r line; do ...; done < file  # читання файлу рядками
+${#VAR}                             # довжина рядка
+${VAR##*/}                          # ім'я файлу з шляху
+${VAR:-default}                     # значення за замовчуванням
+$? / $# / $@ / $$                   # код виходу / аргументи / PID
+
+# ═══════════════════════════════════════════════════════════
+# ЛОГУВАННЯ (lesson5_3 / lesson5_4)
+# ═══════════════════════════════════════════════════════════
+tail -f /var/log/syslog             # стежити за syslog
+tail -f /var/log/auth.log           # стежити за авторизацією
+journalctl -f                       # стежити за journald
+journalctl -u SERVICE               # логи конкретного сервісу
+journalctl -p err                   # тільки помилки і вище
+journalctl --since "1 hour ago"     # за останню годину
+journalctl --since today            # за сьогодні
+journalctl --disk-usage             # розмір журналу на диску
+sudo journalctl --vacuum-time=30d   # видалити старіші 30 днів
+logger -t TAG -p local0.info "MSG"  # записати у syslog
+grep -i "error\|fail" /var/log/syslog       # пошук помилок
+awk '{print $5}' /var/log/syslog | sort | uniq -c | sort -rn  # топ процесів
+sudo logrotate --force /etc/logrotate.d/APP # ротація вручну
+sudo rsyslogd -N1                   # перевірка конфігурації rsyslog
 ```
 
 ---
