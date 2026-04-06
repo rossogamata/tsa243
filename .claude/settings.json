@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/home/enduro/viti/tsa243"
+    ],
+    "allow": [
+      "Bash(chmod +x /home/enduro/viti/tsa243/lesson5_6/self_check/check.sh)",
+      "Bash(bash -n /home/enduro/viti/tsa243/lesson5_6/self_check/check.sh)"
+    ]
+  }
+}
