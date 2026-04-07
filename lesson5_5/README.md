@@ -155,7 +155,7 @@ sudo ip route add 10.0.0.0/8 via 192.168.177.1
 sudo ip route del 192.168.100.0/24
 
 # Встановити / замінити шлюз за замовчуванням
-sudo ip route replace default via 192.168.177.1
+sudo ip route replace default via 192.168.177.254
 ```
 
 #### ARP-таблиця (сусіди)
