@@ -197,7 +197,7 @@ network:
         - 192.168.177.101/24
       routes:
         - to: default
-          via: 192.168.177.1
+          via: 192.168.177.254
       nameservers:
         addresses:
           - 8.8.8.8
