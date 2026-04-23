@@ -13,7 +13,7 @@
 2. [Топологія стенду](#топологія-стенду)
 3. [Встановлення BIND9](#1-встановлення-bind9)
 4. [Налаштування BIND сервера](#2-налаштування-bind-сервера)
-5. [Створення зони tsa233.lab](#3-створення-зони-tsa233lab)
+5. [Створення зони tsa243.lab](#3-створення-зони-tsa243lab)
 6. [Налаштування клієнтів Windows](#4-налаштування-клієнтів-windows)
 7. [Перевірка роботи](#5-перевірка-роботи)
 8. [Завдання на самопідготовку](#завдання-на-самопідготовку)
@@ -28,17 +28,17 @@
 **BIND (Berkeley Internet Name Domain)** — найпоширеніше програмне забезпечення DNS-сервера, що обслуговує значну частину доменних імен в Інтернеті.
 
 > 💡 **Чому `.lab`, а не `.com`?**  
-> Домен `tsa233.lab` використовує неіснуючий у публічному інтернеті TLD `.lab`. Це гарантує, що запити до цього домену **ніколи не вийдуть за межі лабораторної мережі** і не перетинатимуться з реальними сайтами. Для навчальних стендів завжди використовуйте `.lab`, `.test` або `.internal`.
+> Домен `tsa243.lab` використовує неіснуючий у публічному інтернеті TLD `.lab`. Це гарантує, що запити до цього домену **ніколи не вийдуть за межі лабораторної мережі** і не перетинатимуться з реальними сайтами. Для навчальних стендів завжди використовуйте `.lab`, `.test` або `.internal`.
 
 ### Типи DNS-записів, що використовуються в роботі:
 
 | Тип запису | Призначення | Приклад |
 |-----------|-------------|---------|
 | `SOA` | Start of Authority — параметри зони | Серійний номер, TTL |
-| `NS` | Name Server — вказує DNS-сервер зони | `ns1.tsa233.lab.` |
-| `A` | Address — IPv4-адреса хоста | `tsa233.lab. → 192.168.1.100` |
-| `CNAME` | Canonical Name — псевдонім | `www → tsa233.lab.` |
-| `PTR` | Pointer — зворотна відповідність | `100 → tsa233.lab.` |
+| `NS` | Name Server — вказує DNS-сервер зони | `ns1.tsa243.lab.` |
+| `A` | Address — IPv4-адреса хоста | `tsa243.lab. → 192.168.1.100` |
+| `CNAME` | Canonical Name — псевдонім | `www → tsa243.lab.` |
+| `PTR` | Pointer — зворотна відповідність | `100 → tsa243.lab.` |
 
 ### Типи DNS-серверів:
 
@@ -176,7 +176,7 @@ sudo named-checkconf
 
 ---
 
-## 3. Створення зони tsa233.lab
+## 3. Створення зони tsa243.lab
 
 ### 3.1 Оголосити зону в named.conf.local
 
@@ -188,9 +188,9 @@ sudo nano /etc/bind/named.conf.local
 
 ```conf
 // Пряма зона (ім'я → IP)
-zone "tsa233.lab" {
+zone "tsa243.lab" {
     type master;
-    file "/etc/bind/zones/db.tsa233.lab";
+    file "/etc/bind/zones/db.tsa243.lab";
 };
 
 // Зворотна зона (IP → ім'я)
@@ -209,15 +209,15 @@ sudo mkdir -p /etc/bind/zones
 ### 3.3 Створити файл прямої зони
 
 ```bash
-sudo nano /etc/bind/zones/db.tsa233.lab
+sudo nano /etc/bind/zones/db.tsa243.lab
 ```
 
 ```dns
 ;
-; Файл прямої зони для tsa233.lab
+; Файл прямої зони для tsa243.lab
 ;
 $TTL    604800
-@   IN  SOA ns1.tsa233.lab. admin.tsa233.lab. (
+@   IN  SOA ns1.tsa243.lab. admin.tsa243.lab. (
                   2024010101  ; Serial (формат: YYYYMMDDNN)
                   3600        ; Refresh (1 год)
                   1800        ; Retry (30 хв)
@@ -225,7 +225,7 @@ $TTL    604800
                   86400 )     ; Negative Cache TTL (1 день)
 
 ; Записи Name Server
-@       IN  NS      ns1.tsa233.lab.
+@       IN  NS      ns1.tsa243.lab.
 
 ; A-записи (ім'я → IP)
 ns1     IN  A       192.168.1.10    ; DNS-сервер (Ubuntu VM)
@@ -233,7 +233,7 @@ ns1     IN  A       192.168.1.10    ; DNS-сервер (Ubuntu VM)
 www     IN  A       192.168.1.100   ; www псевдонім
 
 ; CNAME (псевдонім)
-web     IN  CNAME   tsa233.lab.
+web     IN  CNAME   tsa243.lab.
 ```
 
 ### 3.4 Створити файл зворотної зони
@@ -247,7 +247,7 @@ sudo nano /etc/bind/zones/db.192.168.1
 ; Файл зворотної зони для 192.168.1.0/24
 ;
 $TTL    604800
-@   IN  SOA ns1.tsa233.lab. admin.tsa233.lab. (
+@   IN  SOA ns1.tsa243.lab. admin.tsa243.lab. (
                   2024010101  ; Serial
                   3600        ; Refresh
                   1800        ; Retry
@@ -255,24 +255,24 @@ $TTL    604800
                   86400 )     ; Negative Cache TTL
 
 ; Name Server
-@   IN  NS  ns1.tsa233.lab.
+@   IN  NS  ns1.tsa243.lab.
 
 ; PTR-записи (останній октет IP → повне ім'я)
-10  IN  PTR ns1.tsa233.lab.     ; 192.168.1.10
-100 IN  PTR tsa233.lab.         ; 192.168.1.100
+10  IN  PTR ns1.tsa243.lab.     ; 192.168.1.10
+100 IN  PTR tsa243.lab.         ; 192.168.1.100
 ```
 
 ### 3.5 Перевірити синтаксис файлів зон
 
 ```bash
 # Перевірка прямої зони
-sudo named-checkzone tsa233.lab /etc/bind/zones/db.tsa233.lab
+sudo named-checkzone tsa243.lab /etc/bind/zones/db.tsa243.lab
 
 # Перевірка зворотної зони
 sudo named-checkzone 1.168.192.in-addr.arpa /etc/bind/zones/db.192.168.1
 ```
 
-> ✅ Очікуваний вивід: `zone tsa233.lab/IN: loaded serial 2024010101` та `OK`
+> ✅ Очікуваний вивід: `zone tsa243.lab/IN: loaded serial 2024010101` та `OK`
 
 ### 3.6 Встановити правильні права доступу
 
@@ -322,14 +322,14 @@ Get-DnsClientServerAddress
 
 ```cmd
 :: Перевірити розпізнавання домену
-nslookup tsa233.lab
-nslookup www.tsa233.lab
+nslookup tsa243.lab
+nslookup www.tsa243.lab
 
 :: Пінг за доменним ім'ям
-ping tsa233.lab
+ping tsa243.lab
 
 :: Детальний DNS-запит напряму до нашого сервера
-nslookup -type=A tsa233.lab 192.168.1.10
+nslookup -type=A tsa243.lab 192.168.1.10
 ```
 
 ---
@@ -343,8 +343,8 @@ nslookup -type=A tsa233.lab 192.168.1.10
 sudo journalctl -u bind9 -f
 
 # Тестові запити з сервера
-dig @localhost tsa233.lab
-dig @localhost www.tsa233.lab
+dig @localhost tsa243.lab
+dig @localhost www.tsa243.lab
 dig @localhost -x 192.168.1.100
 
 # Перевірити відкриті порти
@@ -354,15 +354,15 @@ sudo ss -tulnp | grep named
 ### На клієнті (Windows):
 
 ```cmd
-nslookup tsa233.lab
-nslookup www.tsa233.lab
-nslookup -type=NS tsa233.lab
-nslookup -type=SOA tsa233.lab
+nslookup tsa243.lab
+nslookup www.tsa243.lab
+nslookup -type=NS tsa243.lab
+nslookup -type=SOA tsa243.lab
 ```
 
 ### Очікуваний результат у браузері:
 
-Відкрийте `http://tsa233.lab` — має відкритися сайт, запущений на ПК викладача у Docker.
+Відкрийте `http://tsa243.lab` — має відкритися сайт, запущений на ПК викладача у Docker.
 
 ---
 
@@ -372,12 +372,12 @@ nslookup -type=SOA tsa233.lab
 
 ### Завдання 1 — Базове (обов'язкове)
 
-Додати до зони `tsa233.lab` наступні записи:
-- `mail.tsa233.lab` → `192.168.1.20` (тип `A`)
-- `ftp.tsa233.lab` → `192.168.1.30` (тип `A`)
-- Запис `MX` для домену з пріоритетом `10`, що вказує на `mail.tsa233.lab`
+Додати до зони `tsa243.lab` наступні записи:
+- `mail.tsa243.lab` → `192.168.1.20` (тип `A`)
+- `ftp.tsa243.lab` → `192.168.1.30` (тип `A`)
+- Запис `MX` для домену з пріоритетом `10`, що вказує на `mail.tsa243.lab`
 
-Перевірити: `nslookup -type=MX tsa233.lab`
+Перевірити: `nslookup -type=MX tsa243.lab`
 
 ---
 
@@ -386,15 +386,15 @@ nslookup -type=SOA tsa233.lab
 Налаштувати **другий DNS-сервер** (slave/secondary):
 
 1. На другій віртуальній машині встановити BIND9
-2. Налаштувати зону `tsa233.lab` як `slave` з master-сервером `192.168.1.10`
+2. Налаштувати зону `tsa243.lab` як `slave` з master-сервером `192.168.1.10`
 3. Переконатися, що зона автоматично синхронізується після зміни Serial
 
 ```conf
 // Конфігурація slave-зони на другому сервері
-zone "tsa233.lab" {
+zone "tsa243.lab" {
     type slave;
     masters { 192.168.1.10; };
-    file "/var/cache/bind/db.tsa233.lab.slave";
+    file "/var/cache/bind/db.tsa243.lab.slave";
 };
 ```
 
@@ -404,8 +404,8 @@ zone "tsa233.lab" {
 
 Налаштувати **split-horizon DNS** (різні відповіді для різних клієнтів):
 
-- Клієнти мережі `192.168.1.0/24`: `tsa233.lab` → `192.168.1.100`
-- Клієнти мережі `10.0.0.0/8`: `tsa233.lab` → `10.0.0.100`
+- Клієнти мережі `192.168.1.0/24`: `tsa243.lab` → `192.168.1.100`
+- Клієнти мережі `10.0.0.0/8`: `tsa243.lab` → `10.0.0.100`
 
 Використати директиву `view` у конфігурації BIND.
 
@@ -446,7 +446,7 @@ sudo journalctl -u bind9 -f
 sudo ss -tulnp | grep :53
 
 # Повний dig-запит з покроковим трасуванням
-dig +trace tsa233.lab @192.168.1.10
+dig +trace tsa243.lab @192.168.1.10
 ```
 
 ### Файли та директорії
@@ -470,7 +470,7 @@ lesson6_2/
 ├── configs/
 │   ├── named.conf.options        # Конфіг параметрів BIND
 │   ├── named.conf.local          # Оголошення зон
-│   ├── db.tsa233.lab             # Файл прямої зони
+│   ├── db.tsa243.lab             # Файл прямої зони
 │   └── db.192.168.1              # Файл зворотної зони
 └── docker/
     ├── Dockerfile                # Образ nginx для сайту
