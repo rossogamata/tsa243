@@ -1,39 +1,98 @@
-# Nginx — proxy.tsa243.lab
-
-**VM:** `proxy.tsa243.lab` · `192.168.177.12`  
-**Сервіс:** Nginx reverse proxy  
-**Порти:** 80 (HTTP), 443 (HTTPS)
+# Nginx — дворівнева архітектура
 
 ---
 
-## Що керує викладач
+## Рівень 1 — Центральний reverse proxy викладача `11.203.0.12`
 
-- Встановлення Nginx, базова конфігурація
-- TLS wildcard-сертифікат для `*.tsa243.lab`
-- Default vhost з переліком активних курсантських сайтів
+Єдина точка входу для всієї мережі `tsa243.lab`.
+Приймає HTTP/HTTPS запити і проксує їх до Nginx відповідного курсанта.
 
-## Що робить кожен курсант
+### Vhost для кожного курсанта
 
-1. Запускає будь-який HTTP-сервіс на своїй VM (Python, Node, Nginx, Apache)
-2. Просить (або сам через PR) додати свій vhost-конфіг:
+```nginx
+# /etc/nginx/sites-available/surname.tsa243.lab
+server {
+    listen 80;
+    server_name surname.tsa243.lab www.surname.tsa243.lab;
 
-   ```nginx
-   # /etc/nginx/sites-available/surname.tsa243.lab
-   server {
-       listen 80;
-       server_name surname.tsa243.lab;
+    location / {
+        proxy_pass         http://11.203.X.12;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+    }
+}
+```
 
-       location / {
-           proxy_pass http://192.168.177.1XX:PORT;
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-       }
-   }
-   ```
+Викладач додає цей блок для кожного курсанта після того як курсант:
+1. Налаштував свій DNS (A-запис вказує на `11.203.0.12`)
+2. Підняв свій Nginx на `11.203.X.12`
 
-3. Перевіряє через браузер: `http://surname.tsa243.lab`
+---
 
-## Навчальний момент
+## Рівень 2 — Nginx курсанта `11.203.X.12`
 
-Reverse proxy як концепція: клієнт звертається до одного IP (.12), Nginx знає
-куди перенаправити запит. Природній місток до Docker / load balancing на наступному курсі.
+Приймає трафік від proxy викладача і передає до HAProxy.
+
+```nginx
+# /etc/nginx/sites-available/default
+server {
+    listen 80;
+    server_name surname.tsa243.lab;
+
+    # Проксуємо до HAProxy
+    location / {
+        proxy_pass         http://11.203.X.13;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+    }
+
+    # Статичний контент — обслуговуємо безпосередньо
+    location /static/ {
+        root /var/www/surname;
+    }
+
+    # Сторінка-заглушка до налаштування HAProxy
+    location /health {
+        return 200 "surname.tsa243.lab is alive\n";
+        add_header Content-Type text/plain;
+    }
+}
+```
+
+---
+
+## Повний потік
+
+```
+Client
+  │  HTTP GET surname.tsa243.lab/
+  ▼
+proxy.tsa243.lab : 11.203.0.12   (Nginx викладача)
+  │  proxy_pass → 11.203.X.12
+  ▼
+www.surname.tsa243.lab : 11.203.X.12   (Nginx курсанта)
+  │  proxy_pass → 11.203.X.13
+  ▼
+lb.surname.tsa243.lab : 11.203.X.13    (HAProxy)
+  │  balance roundrobin
+  ├─▶ backend-01 : 11.203.X.30:8080
+  └─▶ backend-02 : 11.203.X.31:8080
+```
+
+---
+
+## Перевірка
+
+```bash
+# З workstation курсанта
+curl -v http://surname.tsa243.lab/
+curl -v http://surname.tsa243.lab/health
+
+# Перевірити заголовки (X-Forwarded-For має показати реальний IP клієнта)
+curl -s http://surname.tsa243.lab/ -D -
+
+# Журнал доступу
+sudo tail -f /var/log/nginx/access.log
+```
