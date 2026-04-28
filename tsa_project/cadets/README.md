@@ -2,67 +2,84 @@
 
 ---
 
-## Крок 1 — Налаштування середовища (один раз на початку курсу)
-
-### 1.1 Клонувати репозиторій
+## Крок 1 — Налаштування (один раз на початку курсу)
 
 ```bash
+# Клонувати репозиторій
 git clone https://github.com/ВАШ_ORG/tsa243.git
 cd tsa243/tsa_project
-```
 
-### 1.2 Створити власний branch
-
-```bash
-git checkout -b surname          # наприклад: git checkout -b petrenko
-git push -u origin surname
-```
-
-### 1.3 Скопіювати шаблон
-
-```bash
+# Створити власний каталог зі шаблону
 cp -r cadets/_template cadets/surname
 git add cadets/surname
-git commit -m "init: додаю свій каталог"
-git push
+git commit -m "surname: init"
+git push origin main
 ```
+
+Заповни `cadets/surname/README.md` — IP твоєї VM, hostname, SSH публічний ключ.
 
 ---
 
 ## Крок 2 — Робота на кожному занятті
 
+### Важливо: кожне заняття — окрема гілка
+
+Довгоживуча гілка `surname` з часом розходиться з `main` і при відкритті PR
+виникають merge conflicts. Тому для кожного заняття створюється нова гілка
+від актуального `main`.
+
+```bash
+# 1. Переконатись що main актуальний
+git checkout main
+git pull origin main
+
+# 2. Створити гілку для заняття
+git checkout -b surname/lesson5_6
+```
+
 ### На VM
 
-Виконуй завдання відповідно до README заняття. Зберігай команди, конфіги, результати.
+Виконай завдання відповідно до README заняття. Зберігай команди і результати.
 
 ### У репозиторії
 
-Після виконання:
-
 ```bash
-# Перейди у свій branch
-git checkout surname
+# 3. Скопіювати шаблон і заповнити звіт
+cp cadets/_template/reports/lesson_template.md cadets/surname/reports/lesson5_6.md
+nano cadets/surname/reports/lesson5_6.md
 
-# Заповни звіт по шаблону
-nano cadets/surname/reports/lessonX_Y.md
-
-# Закомітуй
-git add cadets/surname/reports/lessonX_Y.md
-git commit -m "lessonX_Y: коротка назва теми"
-git push
+# 4. Закомітити
+git add cadets/surname/reports/lesson5_6.md
+git commit -m "surname/lesson5_6: мережева конфігурація"
+git push origin surname/lesson5_6
 ```
 
 ---
 
 ## Крок 3 — Відкрити PR для захисту
 
-1. Зайди на GitHub → репозиторій → **Pull Requests** → **New Pull Request**
-2. **base:** `main` ← **compare:** `surname`
-3. Заголовок: `[surname] Lesson X.Y — Назва теми`
-4. Опис заповниться автоматично з шаблону — заповни всі розділи
-5. Натисни **Create Pull Request**
+1. GitHub → репозиторій → **Pull Requests** → **New Pull Request**
+2. **base:** `main` ← **compare:** `surname/lesson5_6`
+3. Заголовок: `[surname] Lesson 5.6 — Мережева конфігурація`
+4. Заповни шаблон опису
+5. **Create Pull Request**
 
-Викладач перевіряє, залишає коментарі. Після виправлень — **Approve = залік**.
+Викладач перевіряє, залишає коментарі.
+**Approve = залік**, гілка видаляється автоматично після merge.
+
+---
+
+## Цикл на кожне заняття
+
+```
+git checkout main && git pull        ← стартуємо з актуального main
+git checkout -b surname/lessonX_Y    ← нова гілка
+  ... робота на VM ...
+  ... заповнити звіт ...
+git add / commit / push              ← один коміт
+PR: surname/lessonX_Y → main         ← захист
+Approve → merge → гілка видалена    ← залік
+```
 
 ---
 
@@ -70,29 +87,30 @@ git push
 
 ```
 cadets/surname/
-├── README.md          ← про тебе: VM IP, hostname, SSH публічний ключ
+├── README.md          ← VM IP, hostname, SSH публічний ключ, таблиця прогресу
 └── reports/
     ├── lesson2_2.md
     ├── lesson3_3.md
-    └── ...            ← один файл на практичну/групову роботу
+    └── ...
 ```
 
 ---
 
 ## Правила
 
-- Кожна практична і групова робота = окремий PR
 - PR відкривається **після** виконання роботи на VM, не до
-- Звіт без скріншотів або виводу команд не приймається
-- Ламати спільні VM (`ns1`, `mail`, `proxy`, `mon`) — не можна. Якщо щось пішло не так — одразу повідомляй викладача
+- Звіт без виводу команд або скріншотів не приймається
+- Один PR = одне заняття = один коміт
+- Ламати чужу інфраструктуру заборонено. Якщо щось пішло не так — одразу повідомляй викладача
 
 ---
 
 ## Корисні команди
 
 ```bash
-git status                        # що змінилось
-git log --oneline -10             # останні 10 комітів
-git diff                          # що саме змінилось у файлах
-git pull origin main              # отримати оновлення від викладача
+git status                          # що змінилось
+git log --oneline -10               # останні 10 комітів
+git branch -a                       # всі гілки
+git checkout main && git pull       # оновити main
+git branch -d surname/lesson5_6     # видалити локальну гілку після merge
 ```

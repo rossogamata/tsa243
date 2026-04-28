@@ -138,25 +138,53 @@ surname1.tsa243.lab  (авторитативний: ns1.surname1.tsa243.lab · 1
 
 ## Git Workflow
 
-### Структура гілок
+### Принцип: одне заняття — одна гілка — один PR
+
+Довгоживучі гілки на курсанта призводять до merge conflicts: поки викладач
+оновлює `main`, гілка курсанта розходиться і PR тягне за собою конфлікти
+в файлах занять. Замість цього — **short-lived feature branches**:
 
 ```
-main  ← викладач: матеріали занять, еталонні конфіги, шаблони
-├── surname1
-├── surname2
-└── ...  (29 гілок)
+main (викладач — матеріали, еталонні конфіги)
+├── petrenko/lesson2_2   → PR → merge → delete
+├── petrenko/lesson3_3   → PR → merge → delete
+├── shevchenko/lesson2_2 → PR → merge → delete
+└── ...
 ```
+
+Кожна гілка живе рівно один цикл: створена → один коміт → PR → merge → видалена.
+Немає накопиченого розходження, немає конфліктів між курсантами.
 
 ### Захист практичних — один PR на заняття
 
+```bash
+# 1. Синхронізуватись з main перед початком
+git checkout main
+git pull origin main
+
+# 2. Створити гілку для конкретного заняття
+git checkout -b petrenko/lesson5_6
+
+# 3. Виконати роботу на VM, задокументувати
+# Файл: cadets/petrenko/reports/lesson5_6.md
+
+# 4. Закомітити і запушити
+git add cadets/petrenko/reports/lesson5_6.md
+git commit -m "petrenko/lesson5_6: мережева конфігурація"
+git push origin petrenko/lesson5_6
+
+# 5. Відкрити PR: petrenko/lesson5_6 → main
+# 6. Approve викладача = залік, гілка видаляється
 ```
-1. Виконати роботу на VM
-2. Задокументувати в cadets/surname/reports/lessonX_Y.md
-3. git commit -m "lessonX_Y: короткий опис"
-4. git push origin surname
-5. Відкрити PR: surname → main
-6. Approve викладача = залік
-```
+
+### Чому це правильно
+
+| Довгоживуча гілка `petrenko` | Short-lived `petrenko/lesson5_6` |
+|-----------------------------|----------------------------------|
+| Розходиться з `main` з часом | Завжди стартує з актуального `main` |
+| PR містить всі попередні коміти | PR містить рівно один коміт |
+| Merge conflicts неминучі | Конфліктів немає — новий файл |
+| Складно ревʼювити | Чистий diff — один звіт |
 
 ---
 

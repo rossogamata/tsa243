@@ -1,4 +1,4 @@
-# [surname] Lesson X.Y — Назва теми
+# [surname/lessonX_Y] Назва теми
 
 **Курсант:**  
 **VM:** `surname.tsa243.lab` · `192.168.177.1XX`  
