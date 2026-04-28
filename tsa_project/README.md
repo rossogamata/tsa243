@@ -9,7 +9,7 @@
 
 ## Архітектура
 
-![Архітектура tsa243.lab](assets/architecture.png)
+![Архітектура tsa243.lab](assets/tsa243_network_topology.png)
 
 ---
 
