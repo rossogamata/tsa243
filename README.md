@@ -21,6 +21,7 @@
 | [lesson5\_5](lesson5_5/) | Мережеві налаштування та передача файлів між системами | Групове |
 | [lesson5\_6](lesson5_6/) | Мережева конфігурація | Практика |
 | [lesson5\_7](lesson5_7/) | Використання утиліт віддаленого доступу до файлів | Практика |
+| [lesson7\_4](lesson7_4/) | Основи налаштування веб-сервера Apache | Групове |
 
 ---
 
@@ -358,6 +359,18 @@ rsync -avz --delete src/ user@HOST:/dst/  # дзеркало
 rsync -avz --exclude='.git' src/ user@HOST:/dst/  # з виключенням
 sftp user@HOST                      # інтерактивна SFTP-сесія
 ```
+
+---
+
+### [Заняття 7.4 — Основи налаштування веб-сервера Apache](lesson7_4/)
+
+- Типи серверів: веб, застосунків, файловий, поштовий, DNS, проксі, БД
+- Архітектура Apache httpd: MPM, модульна система
+- Структура конфігурації: `apache2.conf`, `sites-available/`, `mods-enabled/`
+- Утиліти: `a2ensite`, `a2dissite`, `a2enmod`, `apache2ctl -S`, `configtest`
+- Налаштування першого vhost: `surname.tsa243.lab` → `/var/www/main`
+- Налаштування другого vhost: `dev.surname.tsa243.lab` → `/var/www/dev`
+- Інтеграція з DNS курсанта: A-записи для нових субдоменів
 
 ---
 
