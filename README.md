@@ -21,6 +21,7 @@
 | [lesson5\_5](lesson5_5/) | Мережеві налаштування та передача файлів між системами | Групове |
 | [lesson5\_6](lesson5_6/) | Мережева конфігурація | Практика |
 | [lesson5\_7](lesson5_7/) | Використання утиліт віддаленого доступу до файлів | Практика |
+| [lesson7\_1](lesson7_1/) | Протоколи HTTP та TLS/SSL | Лекція |
 | [lesson7\_4](lesson7_4/) | Основи налаштування веб-сервера Apache | Групове |
 
 ---
@@ -359,6 +360,18 @@ rsync -avz --delete src/ user@HOST:/dst/  # дзеркало
 rsync -avz --exclude='.git' src/ user@HOST:/dst/  # з виключенням
 sftp user@HOST                      # інтерактивна SFTP-сесія
 ```
+
+---
+
+### [Заняття 7.1 — Протоколи HTTP та TLS/SSL (Лекція)](lesson7_1/)
+
+- **HTTP:** архітектура клієнт-сервер, методи GET/POST/PUT/DELETE, коди стану 2xx/3xx/4xx/5xx
+- Структура запиту і відповіді: рядок запиту, заголовки, тіло; розбір URL
+- Заголовки безпеки: `Set-Cookie` (HttpOnly/Secure/SameSite), `Authorization`, CSRF-захист
+- HTTP/2: мультиплексування, стиснення заголовків (HPACK); HTTP/3 поверх QUIC
+- **TLS/SSL:** еволюція від SSL 2.0 до TLS 1.3; handshake TLS 1.2 та 1.3
+- Cipher suites, Perfect Forward Secrecy (ECDHE), AEAD-шифри
+- Сертифікати X.509, SNI, HSTS; перевірка за допомогою `openssl s_client` та `curl`
 
 ---
 
