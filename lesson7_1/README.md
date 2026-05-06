@@ -70,8 +70,8 @@
 #### Запит (Request)
 
 ```
-GET /courses/linux/lesson7 HTTP/1.1          ← Рядок запиту (метод + URI + версія)
-Host: tsa243.lab                             ┐
+GET / HTTP/1.1                               ← Рядок запиту (метод + URI + версія)
+Host: example.com                            ┐
 User-Agent: Mozilla/5.0 (X11; Linux x86_64) │
 Accept: text/html,application/xhtml+xml     │ Заголовки
 Accept-Language: uk,en;q=0.9               │
@@ -98,13 +98,13 @@ Last-Modified: Mon, 05 May 2026 08:30:00 GMT┘
 #### Структура URL
 
 ```
-https://tsa243.lab:8443/courses/linux?topic=http&page=2#section1
-│       │          │    │             │                  │
-│       │          │    │             │                  └─ Fragment (обробляється браузером, серверу не надсилається)
-│       │          │    │             └─ Query string (?key=value&key2=value2)
-│       │          │    └─ Path (/courses/linux)
-│       │          └─ Port (:8443, необов'язковий — за замовчуванням 80/443)
-│       └─ Host (tsa243.lab)
+https://example.com:8443/courses/linux?topic=http&page=2#section1
+│       │           │    │             │                  │
+│       │           │    │             │                  └─ Fragment (обробляється браузером, серверу не надсилається)
+│       │           │    │             └─ Query string (?key=value&key2=value2)
+│       │           │    └─ Path (/courses/linux)
+│       │           └─ Port (:8443, необов'язковий — за замовчуванням 80/443)
+│       └─ Host (example.com)
 └─ Scheme (https://)
 ```
 
@@ -113,17 +113,17 @@ https://tsa243.lab:8443/courses/linux?topic=http&page=2#section1
 ```bash
 # Підключитись по TCP і надіслати запит вручну
 # (HTTP/1.1 вимагає заголовок Host)
-printf "GET / HTTP/1.1\r\nHost: tsa243.lab\r\nConnection: close\r\n\r\n" \
-    | nc tsa243.lab 80
+printf "GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n" \
+    | nc example.com 80
 
 # Те саме через curl із відображенням заголовків
-curl -v http://tsa243.lab/
+curl -v http://example.com/
 
 # Тільки заголовки відповіді (без тіла)
-curl -I http://tsa243.lab/
+curl -I http://example.com/
 
 # Детальний вивід: що надіслав curl і що отримав
-curl -v --trace-ascii /dev/stdout http://tsa243.lab/ 2>&1 | head -40
+curl -v --trace-ascii /dev/stdout http://example.com/ 2>&1 | head -40
 ```
 
 ---
@@ -144,27 +144,27 @@ curl -v --trace-ascii /dev/stdout http://tsa243.lab/ 2>&1 | head -40
 > **Безпечний** — не змінює стан сервера.
 
 ```bash
-# GET — отримати ресурс
-curl -X GET http://api.tsa243.lab/users/5
+# GET — отримати ресурс (httpbin.org повертає деталі запиту у JSON)
+curl -X GET https://httpbin.org/get?id=5
 
-# POST — створити нового курсанта
-curl -X POST http://api.tsa243.lab/cadets \
+# POST — надіслати дані
+curl -X POST https://httpbin.org/post \
     -H "Content-Type: application/json" \
     -d '{"name": "Іванченко", "rank": "курсант"}'
 
-# PUT — повна заміна запису
-curl -X PUT http://api.tsa243.lab/cadets/5 \
+# PUT — повна заміна
+curl -X PUT https://httpbin.org/put \
     -H "Content-Type: application/json" \
     -d '{"name": "Іванченко", "rank": "молодший сержант"}'
 
 # DELETE — видалити
-curl -X DELETE http://api.tsa243.lab/cadets/5
+curl -X DELETE https://httpbin.org/delete
 
 # HEAD — перевірити чи існує ресурс і коли змінено
-curl -I http://tsa243.lab/large-file.iso
+curl -I https://example.com/
 
 # OPTIONS — що дозволено
-curl -X OPTIONS http://api.tsa243.lab/ -v 2>&1 | grep "Allow:"
+curl -X OPTIONS https://httpbin.org/ -v 2>&1 | grep "Allow:"
 ```
 
 ---
@@ -205,13 +205,14 @@ HTTP-відповіді мають тризначний код, згрупова
 
 ```bash
 # Побачити код стану в curl
-curl -o /dev/null -s -w "%{http_code}\n" http://tsa243.lab/
+curl -o /dev/null -s -w "%{http_code}\n" https://example.com/
 
 # Слідувати за перенаправленнями (-L)
-curl -L http://tsa243.lab/old-page
+# httpbin.org/redirect/1 робить рівно одне перенаправлення — ідеально для демонстрації
+curl -L https://httpbin.org/redirect/1
 
 # Побачити всі кроки перенаправлення
-curl -v -L http://tsa243.lab/old-page 2>&1 | grep -E "^[<>]|HTTP/"
+curl -v -L https://httpbin.org/redirect/1 2>&1 | grep -E "^[<>]|HTTP/"
 ```
 
 ---
@@ -224,7 +225,7 @@ curl -v -L http://tsa243.lab/old-page 2>&1 | grep -E "^[<>]|HTTP/"
 
 | Заголовок | Призначення | Приклад |
 |-----------|-------------|---------|
-| `Host` | Ім'я хоста (обов'язковий у HTTP/1.1) | `Host: tsa243.lab` |
+| `Host` | Ім'я хоста (обов'язковий у HTTP/1.1) | `Host: example.com` |
 | `User-Agent` | Ідентифікатор клієнта | `User-Agent: Mozilla/5.0...` |
 | `Accept` | MIME-типи, які клієнт розуміє | `Accept: text/html,application/json` |
 | `Accept-Language` | Мовні переваги | `Accept-Language: uk,en;q=0.9` |
@@ -243,7 +244,7 @@ curl -v -L http://tsa243.lab/old-page 2>&1 | grep -E "^[<>]|HTTP/"
 | `Content-Type` | MIME-тип тіла відповіді | `Content-Type: text/html; charset=UTF-8` |
 | `Content-Length` | Розмір тіла | `Content-Length: 2048` |
 | `Content-Encoding` | Спосіб стиснення | `Content-Encoding: gzip` |
-| `Location` | URI для перенаправлення (3xx) | `Location: https://tsa243.lab/new` |
+| `Location` | URI для перенаправлення (3xx) | `Location: https://example.com/new` |
 | `Set-Cookie` | Встановити cookie | `Set-Cookie: session=abc; HttpOnly` |
 | `Cache-Control` | Керування кешем | `Cache-Control: max-age=3600` |
 | `ETag` | Ідентифікатор версії ресурсу | `ETag: "abc123def"` |
@@ -253,15 +254,15 @@ curl -v -L http://tsa243.lab/old-page 2>&1 | grep -E "^[<>]|HTTP/"
 
 ```bash
 # Переглянути всі заголовки запиту і відповіді
-curl -v http://tsa243.lab/ 2>&1 | grep -E "^[<>] "
+curl -v https://example.com/ 2>&1 | grep -E "^[<>] "
 
-# Надіслати власний заголовок
+# Надіслати власний заголовок (httpbin.org повертає їх у відповіді — зручно для перевірки)
 curl -H "Accept-Language: uk" \
      -H "X-Request-ID: test-001" \
-     http://tsa243.lab/
+     https://httpbin.org/headers
 
 # Переглянути стиснення
-curl -H "Accept-Encoding: gzip" -I http://tsa243.lab/ | grep Content-Encoding
+curl -H "Accept-Encoding: gzip" -I https://example.com/ | grep Content-Encoding
 ```
 
 ---
@@ -296,7 +297,7 @@ HTTP — stateless. Але додаткам потрібно «пам'ятати
 | `SameSite=Strict` | Не надсилається при cross-site запитах → захист від CSRF |
 | `Max-Age=3600` | Час життя в секундах |
 | `Path=/api` | Для яких шляхів діє |
-| `Domain=.tsa243.lab` | Для яких субдоменів діє |
+| `Domain=.example.com` | Для яких субдоменів діє |
 
 #### Схеми автентифікації
 
@@ -310,20 +311,19 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ1c2VyMSJ9.signature
                       └─── Header.Payload.Signature (Base64url кожна частина)
 
 Digest Auth (застаріла):
-Authorization: Digest username="admin", realm="tsa243", nonce="abc", ...
+Authorization: Digest username="admin", realm="example.com", nonce="abc", ...
 ```
 
 ```bash
-# Basic Auth через curl
-curl -u admin:password http://tsa243.lab/protected/
+# Basic Auth через curl (httpbin.org/basic-auth перевіряє логін/пароль)
+curl -u admin:password https://httpbin.org/basic-auth/admin/password
 
-# Bearer Token
-curl -H "Authorization: Bearer eyJhbGci..." http://api.tsa243.lab/data
+# Bearer Token (httpbin.org/bearer перевіряє наявність заголовка)
+curl -H "Authorization: Bearer eyJhbGci..." https://httpbin.org/bearer
 
 # Переглянути cookie які надсилає сервер
 curl -c /tmp/cookies.txt -b /tmp/cookies.txt \
-    -d "username=admin&password=pass" \
-    http://tsa243.lab/login
+    https://httpbin.org/cookies/set?session=abc123
 
 # Декодувати JWT вручну (payload = середня частина)
 TOKEN="eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ1c2VyMSIsImV4cCI6MTc0NjUzMTIwMH0.sig"
@@ -382,14 +382,15 @@ QUIC вирішує head-of-line blocking на рівні транспорту: 
 
 ```bash
 # Перевірити яку версію HTTP використовує сервер
-curl -I --http2 https://tsa243.lab/
-curl -I --http3 https://tsa243.lab/           # якщо підтримується
+# (example.com підтримує HTTP/2, більшість великих сайтів — HTTP/2 і HTTP/3)
+curl -I --http2 https://example.com/
+curl -I --http3 https://example.com/           # якщо підтримується
 
 # Детальна інформація про версію протоколу
-curl -v --http2 https://tsa243.lab/ 2>&1 | grep "Using HTTP"
+curl -v --http2 https://example.com/ 2>&1 | grep "Using HTTP"
 
 # Або через openssl s_client + ALPN (Application-Layer Protocol Negotiation)
-echo | openssl s_client -connect tsa243.lab:443 -alpn h2 2>/dev/null \
+echo | openssl s_client -connect example.com:443 -alpn h2 2>/dev/null \
     | grep "ALPN protocol"
 ```
 
@@ -548,13 +549,13 @@ TLS_AES_128_CCM_SHA256
 
 ```bash
 # Переглянути cipher suites що підтримує сервер
-nmap --script ssl-enum-ciphers -p 443 tsa243.lab
+nmap --script ssl-enum-ciphers -p 443 example.com
 
 # Перевірити конкретний cipher
-openssl s_client -connect tsa243.lab:443 -cipher AES256-GCM-SHA384
+openssl s_client -connect example.com:443 -cipher AES256-GCM-SHA384
 
 # Яка версія TLS та cipher suit використовується
-openssl s_client -connect tsa243.lab:443 2>/dev/null \
+openssl s_client -connect example.com:443 2>/dev/null \
     | grep -E "Protocol|Cipher"
 ```
 
@@ -564,7 +565,7 @@ openssl s_client -connect tsa243.lab:443 2>/dev/null \
 
 > Детально PKI розглянуто у занятті 6.5. Тут — у контексті HTTPS.
 
-**Проблема:** клієнт отримав публічний ключ від сервера. Але звідки він знає, що цей ключ справді належить `tsa243.lab`, а не хакеру?
+**Проблема:** клієнт отримав публічний ключ від сервера. Але звідки він знає, що цей ключ справді належить `example.com`, а не хакеру?
 
 **Рішення:** Центр Сертифікації (CA) підписує сертифікат, підтверджуючи відповідність між доменним ім'ям та публічним ключем.
 
@@ -572,7 +573,7 @@ openssl s_client -connect tsa243.lab:443 2>/dev/null \
 Браузер перевіряє сертифікат:
 
 1. Чи дійсний підпис CA? ────────────► перевірка підпису сертифіката CA
-2. Чи CN/SAN = запитаний домен? ────► tsa243.lab == CN=tsa243.lab? ✓
+2. Чи CN/SAN = запитаний домен? ────► example.com == CN=example.com? ✓
 3. Чи не прострочений? ──────────────► Not Before ≤ сьогодні ≤ Not After
 4. Чи не відкликаний? ───────────────► OCSP / CRL перевірка
 5. Чи CA є довіреним? ───────────────► входить до системного сховища?
@@ -595,20 +596,20 @@ openssl s_client -connect tsa243.lab:443 2>/dev/null \
 
 ```bash
 # Переглянути для яких доменів виданий сертифікат (SAN)
-openssl s_client -connect google.com:443 2>/dev/null \
+openssl s_client -connect example.com:443 2>/dev/null \
     | openssl x509 -noout -text \
     | grep -A1 "Subject Alternative Name"
 
 # Термін дії сертифіката
-openssl s_client -connect tsa243.lab:443 2>/dev/null \
+openssl s_client -connect example.com:443 2>/dev/null \
     | openssl x509 -noout -dates
 
 # Хто видав (Issuer) та кому (Subject)
-openssl s_client -connect tsa243.lab:443 2>/dev/null \
+openssl s_client -connect example.com:443 2>/dev/null \
     | openssl x509 -noout -issuer -subject
 
 # Повний ланцюг сертифікатів
-openssl s_client -connect tsa243.lab:443 -showcerts 2>/dev/null \
+openssl s_client -connect example.com:443 -showcerts 2>/dev/null \
     | grep -E "^(subject|issuer)"
 ```
 
@@ -641,45 +642,48 @@ openssl s_client -connect tsa243.lab:443 -showcerts 2>/dev/null \
 ClientHello:
   ...
   extension: server_name
-    server_name: tsa243.lab     ← сервер бачить ще до TLS-шифрування
+    server_name: example.com    ← сервер бачить ще до TLS-шифрування
   ...
 ```
 
 ```bash
 # Переглянути SNI та весь TLS handshake
-openssl s_client -connect 11.203.X.20:443 -servername tsa243.lab
+openssl s_client -connect example.com:443 -servername example.com
 
-# Перевірити HTTPS-сайт з ігноруванням помилок сертифіката (self-signed)
-curl -k https://tsa243.lab/
+# Перевірити HTTPS-сайт з ігноруванням помилок сертифіката
+# badssl.com — спеціальний тестовий сайт з субдоменами для кожного TLS-сценарію
+curl -k https://self-signed.badssl.com/        # self-signed сертифікат
+curl -k https://expired.badssl.com/            # прострочений сертифікат
+curl -k https://wrong.host.badssl.com/         # невідповідність домену
 
-# Вказати власний CA для перевірки (self-signed або корпоративний CA)
-curl --cacert /path/to/ca.crt https://tsa243.lab/
+# Вказати власний CA для перевірки
+curl --cacert ca.crt https://example.com/
 
 # Примусово TLS 1.2 або 1.3
-curl --tlsv1.2 https://tsa243.lab/
-curl --tlsv1.3 https://tsa243.lab/
+curl --tlsv1.2 https://example.com/
+curl --tlsv1.3 https://example.com/
 
 # Детальна інформація про TLS з'єднання
-curl -v https://tsa243.lab/ 2>&1 | grep -E "SSL|TLS|cipher|certificate"
+curl -v https://example.com/ 2>&1 | grep -E "SSL|TLS|cipher|certificate"
 ```
 
 **HTTP → HTTPS перенаправлення (Apache):**
 
 ```apacheconf
 <VirtualHost *:80>
-    ServerName tsa243.lab
-    Redirect permanent / https://tsa243.lab/
+    ServerName surname.tsa243.lab
+    Redirect permanent / https://surname.tsa243.lab/
     # Або більш правильно:
     # RewriteEngine On
     # RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
 </VirtualHost>
 
 <VirtualHost *:443>
-    ServerName tsa243.lab
+    ServerName surname.tsa243.lab
 
     SSLEngine on
-    SSLCertificateFile    /etc/ssl/certs/tsa243.crt
-    SSLCertificateKeyFile /etc/ssl/private/tsa243.key
+    SSLCertificateFile    /etc/ssl/certs/surname.crt
+    SSLCertificateKeyFile /etc/ssl/private/surname.key
     # Якщо є проміжні сертифікати:
     # SSLCertificateChainFile /etc/ssl/certs/chain.crt
 
@@ -704,11 +708,11 @@ Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains
 
 ```apacheconf
 <VirtualHost *:443>
-    ServerName tsa243.lab
+    ServerName surname.tsa243.lab
 
     SSLEngine on
-    SSLCertificateFile    /etc/ssl/certs/tsa243.crt
-    SSLCertificateKeyFile /etc/ssl/private/tsa243.key
+    SSLCertificateFile    /etc/ssl/certs/surname.crt
+    SSLCertificateKeyFile /etc/ssl/private/surname.key
 
     # Тільки TLS 1.2 та 1.3 (1.0 і 1.1 — застаріли)
     SSLProtocol -all +TLSv1.2 +TLSv1.3
@@ -731,31 +735,31 @@ ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305
 **Перевірка конфігурації:**
 
 ```bash
-# Перевірити версію TLS і cipher suite
-openssl s_client -connect tsa243.lab:443 -tls1_2 2>/dev/null | grep Cipher
-openssl s_client -connect tsa243.lab:443 -tls1_3 2>/dev/null | grep Cipher
+# Перевірити версію TLS і cipher suite на прикладі реального сайту
+openssl s_client -connect example.com:443 -tls1_2 2>/dev/null | grep Cipher
+openssl s_client -connect example.com:443 -tls1_3 2>/dev/null | grep Cipher
 
-# Переконатись що TLS 1.0 відхиляється
-openssl s_client -connect tsa243.lab:443 -tls1 2>&1 | grep -E "error|alert"
+# Переконатись що TLS 1.0 відхиляється (більшість сучасних серверів відхиляють)
+openssl s_client -connect example.com:443 -tls1 2>&1 | grep -E "error|alert"
 
-# Оцінка конфігурації TLS (з мережі Proxmox)
-# В реальних умовах: https://www.ssllabs.com/ssltest/
-nmap --script ssl-enum-ciphers -p 443 tsa243.lab | grep -E "TLSv|cipher|strength"
+# Оцінка конфігурації TLS свого сервера
+nmap --script ssl-enum-ciphers -p 443 11.203.X.20 | grep -E "TLSv|cipher|strength"
+# Для будь-якого публічного сайту: https://www.ssllabs.com/ssltest/
 
-# Перевірити HSTS
-curl -sI https://tsa243.lab/ | grep Strict
+# Перевірити HSTS на прикладі сайту що його використовує
+curl -sI https://example.com/ | grep Strict
 
 # Переглянути весь сертифікат
-openssl s_client -connect tsa243.lab:443 2>/dev/null | openssl x509 -text -noout
+openssl s_client -connect example.com:443 2>/dev/null | openssl x509 -text -noout
 ```
 
 **Швидкий тест HTTPS через openssl:**
 
 ```bash
 # Підключитись як TLS-клієнт і надіслати HTTP-запит
-openssl s_client -connect tsa243.lab:443 -quiet << 'EOF'
+openssl s_client -connect example.com:443 -quiet << 'EOF'
 GET / HTTP/1.1
-Host: tsa243.lab
+Host: example.com
 Connection: close
 
 EOF
@@ -792,37 +796,37 @@ SHA-256, ECDHE, AES-GCM            →  Cipher Suite у TLS 1.3
 # ═══════════════════════════════════════════════════════════
 # HTTP — дослідження та діагностика
 # ═══════════════════════════════════════════════════════════
-curl -v http://tsa243.lab/             # детальний вивід (заголовки + тіло)
-curl -I http://tsa243.lab/             # тільки заголовки відповіді
-curl -L http://tsa243.lab/             # слідувати за редиректами
-curl -o /dev/null -s -w "%{http_code}" http://tsa243.lab/  # тільки код стану
-curl -H "Host: dev.surname.tsa243.lab" http://11.203.X.20/ # вказати Host
-curl -X POST -d '{"key":"val"}' -H "Content-Type: application/json" URL
+curl -v https://example.com/           # детальний вивід (заголовки + тіло)
+curl -I https://example.com/           # тільки заголовки відповіді
+curl -L https://httpbin.org/redirect/1 # слідувати за редиректами
+curl -o /dev/null -s -w "%{http_code}" https://example.com/  # тільки код стану
+curl -H "Host: dev.surname.tsa243.lab" http://11.203.X.20/   # vhost курсанта
+curl -X POST -d '{"key":"val"}' -H "Content-Type: application/json" https://httpbin.org/post
 
 # Тест HTTP вручну через netcat
-printf "GET / HTTP/1.1\r\nHost: tsa243.lab\r\nConnection: close\r\n\r\n" \
-    | nc tsa243.lab 80
+printf "GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n" \
+    | nc example.com 80
 
 # ═══════════════════════════════════════════════════════════
 # TLS — дослідження та діагностика
 # ═══════════════════════════════════════════════════════════
-openssl s_client -connect tsa243.lab:443         # TLS handshake + сертифікат
-openssl s_client -connect tsa243.lab:443 -tls1_3 # Тільки TLS 1.3
-openssl s_client -connect tsa243.lab:443 -showcerts # Весь ланцюг
-openssl s_client -connect tsa243.lab:443 2>/dev/null | openssl x509 -text -noout
+openssl s_client -connect example.com:443         # TLS handshake + сертифікат
+openssl s_client -connect example.com:443 -tls1_3 # Тільки TLS 1.3
+openssl s_client -connect example.com:443 -showcerts # Весь ланцюг
+openssl s_client -connect example.com:443 2>/dev/null | openssl x509 -text -noout
 
 # Перевірити терміни дії
-openssl s_client -connect tsa243.lab:443 2>/dev/null \
+openssl s_client -connect example.com:443 2>/dev/null \
     | openssl x509 -noout -dates
 
 # Переглянути всі SAN (домени у сертифікаті)
-openssl s_client -connect tsa243.lab:443 2>/dev/null \
+openssl s_client -connect example.com:443 2>/dev/null \
     | openssl x509 -noout -text | grep -A1 "Subject Alternative"
 
 # HTTP-запит через TLS (ручний режим)
-openssl s_client -connect tsa243.lab:443 -quiet << 'EOF'
+openssl s_client -connect example.com:443 -quiet << 'EOF'
 GET / HTTP/1.1
-Host: tsa243.lab
+Host: example.com
 Connection: close
 
 EOF
@@ -870,11 +874,19 @@ sudo tail -f /var/log/apache2/error.log | grep -i ssl
    ```
    Записати: код стану, 5 ключових заголовків відповіді, версію Apache.
 
-3. Підключитись до стороннього HTTPS-сервера і дослідити сертифікат:
+3. Дослідити сертифікат публічного сервера:
    ```bash
-   openssl s_client -connect google.com:443 2>/dev/null | openssl x509 -text -noout
+   openssl s_client -connect example.com:443 2>/dev/null | openssl x509 -text -noout
    ```
    Виписати: кому виданий, ким виданий, термін дії, алгоритм підпису.
+
+   Потім порівняти з проблемними сертифікатами на `badssl.com`:
+   ```bash
+   # Прострочений сертифікат
+   openssl s_client -connect expired.badssl.com:443 2>/dev/null | openssl x509 -noout -dates
+   # Самопідписаний
+   openssl s_client -connect self-signed.badssl.com:443 2>/dev/null | openssl x509 -noout -issuer -subject
+   ```
 
 4. Увімкнути SSL-модуль у своєму Apache та налаштувати HTTPS для `surname.tsa243.lab`
    з власним self-signed сертифікатом (використовуючи знання з заняття 6.5).
