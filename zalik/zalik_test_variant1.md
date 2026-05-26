@@ -7,16 +7,12 @@
 
 ---
 
-### Ключ відповідей для викладача позначено: `← ✓`
-
----
-
 ## БЛОК 1 — Процеси та файлові операції
 
 **1.** Яка команда виводить дерево процесів у Linux?
 
 - A) `ps aux`
-- B) `ps -ejH` ← ✓
+- B) `ps -ejH`
 - C) `top -H`
 - D) `pstree -n`
 
@@ -26,7 +22,7 @@
 
 - A) `kill -1 1234`
 - B) `kill -15 1234`
-- C) `kill -9 1234` ← ✓
+- C) `kill -9 1234`
 - D) `kill -2 1234`
 
 ---
@@ -37,7 +33,7 @@
 
 - A) `fdisk -l`
 - B) `df -hT`
-- C) `lsblk -f` ← ✓
+- C) `lsblk -f`
 - D) `mount`
 
 ---
@@ -45,7 +41,7 @@
 **4.** Який файл потрібно відредагувати, щоб розділ монтувався автоматично при кожному завантаженні системи?
 
 - A) `/etc/mtab`
-- B) `/etc/fstab` ← ✓
+- B) `/etc/fstab`
 - C) `/etc/grub.cfg`
 - D) `/proc/mounts`
 
@@ -56,7 +52,7 @@
 **5.** Яка команда повністю видаляє пакет разом з його конфігураційними файлами?
 
 - A) `apt remove <pkg>`
-- B) `apt purge <pkg>` ← ✓
+- B) `apt purge <pkg>`
 - C) `dpkg --delete <pkg>`
 - D) `apt uninstall <pkg>`
 
@@ -66,7 +62,7 @@
 
 - A) `apt show git`
 - B) `dpkg -L git`
-- C) `dpkg -S /usr/bin/git` ← ✓
+- C) `dpkg -S /usr/bin/git`
 - D) `apt-cache search git`
 
 ---
@@ -74,7 +70,7 @@
 **7.** Яка команда відображає перелік динамічних бібліотек (shared libraries), від яких залежить бінарний файл?
 
 - A) `ldconfig -p`
-- B) `ldd` ← ✓
+- B) `ldd`
 - C) `nm -D`
 - D) `objdump -p`
 
@@ -86,7 +82,7 @@
 
 - A) `nano /etc/sudoers`
 - B) `vim /etc/sudoers`
-- C) `visudo` ← ✓
+- C) `visudo`
 - D) `sudo vi /etc/sudoers`
 
 ---
@@ -94,7 +90,7 @@
 **9.** В якому файлі Linux зберігаються хешовані паролі користувачів?
 
 - A) `/etc/passwd`
-- B) `/etc/shadow` ← ✓
+- B) `/etc/shadow`
 - C) `/etc/security/passwd`
 - D) `/etc/login.defs`
 
@@ -103,7 +99,7 @@
 **10.** Який запис crontab виконує скрипт `/opt/check.sh` кожні 15 хвилин?
 
 - A) `15 * * * * /opt/check.sh`
-- B) `*/15 * * * * /opt/check.sh` ← ✓
+- B) `*/15 * * * * /opt/check.sh`
 - C) `* */15 * * * /opt/check.sh`
 - D) `0,15,30,45 1 * * * /opt/check.sh`
 
@@ -115,7 +111,7 @@
 
 - A) `bash -x script.sh`
 - B) `bash -v script.sh`
-- C) `bash -n script.sh` ← ✓
+- C) `bash -n script.sh`
 - D) `bash --check script.sh`
 
 ---
@@ -124,7 +120,7 @@
 
 - A) PID поточного скрипту
 - B) Кількість аргументів командного рядка
-- C) Код завершення (exit code) останньої виконаної команди ← ✓
+- C) Код завершення (exit code) останньої виконаної команди
 - D) Ім'я поточного скрипту
 
 ---
@@ -134,7 +130,7 @@
 **13.** Яка команда виводить журнали сервісу `ssh` через systemd-journald?
 
 - A) `journalctl /var/log/syslog`
-- B) `journalctl -u ssh` ← ✓
+- B) `journalctl -u ssh`
 - C) `tail -f /var/log/auth.log`
 - D) `syslogd --service ssh`
 
@@ -144,7 +140,7 @@
 
 - A) `logwatch`
 - B) `rsyslogd`
-- C) `logrotate` ← ✓
+- C) `logrotate`
 - D) `syslog-ng`
 
 ---
@@ -154,7 +150,7 @@
 **15.** Яка команда показує всі активні TCP-з'єднання у стані LISTEN разом з іменами процесів?
 
 - A) `netstat -a`
-- B) `ss -tlnp` ← ✓
+- B) `ss -tlnp`
 - C) `ip link show`
 - D) `lsof -i tcp`
 
@@ -164,7 +160,7 @@
 
 - A) `network-manager`
 - B) `ifconfig`
-- C) `netplan` ← ✓
+- C) `netplan`
 - D) `nmcli`
 
 ---
@@ -172,7 +168,7 @@
 **17.** Яка команда виконує ping-scan підмережі `192.168.177.0/24` (виявлення активних хостів без сканування портів)?
 
 - A) `nmap -sV 192.168.177.0/24`
-- B) `nmap -sn 192.168.177.0/24` ← ✓
+- B) `nmap -sn 192.168.177.0/24`
 - C) `ping 192.168.177.0/24`
 - D) `nmap -O 192.168.177.0/24`
 
@@ -183,7 +179,7 @@
 **18.** Яка команда генерує пару ключів SSH типу Ed25519?
 
 - A) `ssh-keygen -t rsa -b 4096`
-- B) `ssh-keygen -t ed25519` ← ✓
+- B) `ssh-keygen -t ed25519`
 - C) `openssl genrsa -out id_ed25519`
 - D) `ssh-keygen -t ecdsa`
 
@@ -193,7 +189,7 @@
 
 - A) `scp ~/.ssh/id_ed25519.pub user@host:/`
 - B) `ssh-add ~/.ssh/id_ed25519.pub`
-- C) `ssh-copy-id user@host` ← ✓
+- C) `ssh-copy-id user@host`
 - D) `ssh-agent user@host`
 
 ---
@@ -204,7 +200,7 @@
 
 - A) `GET`
 - B) `HEAD`
-- C) `DELETE` ← ✓
+- C) `DELETE`
 - D) `OPTIONS`
 
 ---
@@ -213,7 +209,7 @@
 
 - A) `302 Found`
 - B) `304 Not Modified`
-- C) `301 Moved Permanently` ← ✓
+- C) `301 Moved Permanently`
 - D) `307 Temporary Redirect`
 
 ---
@@ -222,7 +218,7 @@
 
 - A) `Secure`
 - B) `SameSite=Strict`
-- C) `HttpOnly` ← ✓
+- C) `HttpOnly`
 - D) `Path=/`
 
 ---
@@ -232,7 +228,7 @@
 **23.** Що таке Perfect Forward Secrecy (PFS) у контексті TLS?
 
 - A) Шифрування даних симетричним алгоритмом AES
-- B) Властивість, при якій компрометація приватного ключа сервера не дозволяє розшифрувати минулий трафік завдяки використанню тимчасових ключів для кожного з'єднання ← ✓
+- B) Властивість, при якій компрометація приватного ключа сервера не дозволяє розшифрувати минулий трафік завдяки використанню тимчасових ключів для кожного з'єднання
 - C) Перевірка статусу сертифіката через OCSP
 - D) Стиснення заголовків у протоколі HTTP/2
 
@@ -243,7 +239,7 @@
 - A) `SSL 3.0`
 - B) `TLS 1.0`
 - C) `TLS 1.1`
-- D) `TLS 1.2` ← ✓
+- D) `TLS 1.2`
 
 ---
 
@@ -253,7 +249,7 @@
 
 - A) Round Robin
 - B) Weighted Round Robin
-- C) Least Connections ← ✓
+- C) Least Connections
 - D) URL Hash
 
 ---
@@ -261,7 +257,7 @@
 **26.** В чому принципова різниця між Forward Proxy та Reverse Proxy?
 
 - A) Forward proxy прискорює доступ до інтернету, reverse proxy — до локальних ресурсів
-- B) Forward proxy відомий клієнту та ховає клієнта від сервера; reverse proxy відомий backend-серверам та ховає їх від клієнта ← ✓
+- B) Forward proxy відомий клієнту та ховає клієнта від сервера; reverse proxy відомий backend-серверам та ховає їх від клієнта
 - C) Forward proxy працює на рівні L7, reverse proxy — на рівні L4
 - D) Forward proxy тільки кешує дані, reverse proxy тільки балансує навантаження
 
@@ -273,7 +269,7 @@
 
 - A) `haproxy --test`
 - B) `haproxy -v`
-- C) `haproxy -c -f /etc/haproxy/haproxy.cfg` ← ✓
+- C) `haproxy -c -f /etc/haproxy/haproxy.cfg`
 - D) `haproxy --validate`
 
 ---
@@ -283,7 +279,7 @@
 **28.** Яка модель збору метрик використовується в Prometheus?
 
 - A) Push — агенти самі надсилають метрики на сервер
-- B) Pull — сервер сам опитує цілі (targets) за розкладом ← ✓
+- B) Pull — сервер сам опитує цілі (targets) за розкладом
 - C) Гібридна — Push для метрик, Pull для логів
 - D) Event-driven — метрики надсилаються тільки при зміні стану
 
@@ -294,7 +290,7 @@
 - A) Gauge
 - B) Histogram
 - C) Summary
-- D) Counter ← ✓
+- D) Counter
 
 ---
 
@@ -303,20 +299,7 @@
 - A) `9090`
 - B) `9093`
 - C) `3000`
-- D) `9100` ← ✓
-
----
-
-## ПІДСУМКОВА ТАБЛИЦЯ ВІДПОВІДЕЙ
-
-| № | Відп | № | Відп | № | Відп | № | Відп | № | Відп |
-|---|------|---|------|---|------|---|------|---|------|
-| 1 | **B** | 7 | **B** | 13 | **B** | 19 | **C** | 25 | **C** |
-| 2 | **C** | 8 | **C** | 14 | **C** | 20 | **C** | 26 | **B** |
-| 3 | **C** | 9 | **B** | 15 | **B** | 21 | **C** | 27 | **C** |
-| 4 | **B** | 10 | **B** | 16 | **C** | 22 | **C** | 28 | **B** |
-| 5 | **B** | 11 | **C** | 17 | **B** | 23 | **B** | 29 | **D** |
-| 6 | **C** | 12 | **C** | 18 | **B** | 24 | **D** | 30 | **D** |
+- D) `9100`
 
 ---
 
